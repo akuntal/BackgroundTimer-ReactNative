@@ -5,7 +5,7 @@ navigator.geolocation = require('@react-native-community/geolocation');
 
 const GEO_LOCATION_KEY = 'GEO_LOCATION_KEY_22';
 
-const delay = 5000;
+const delay = 300000;
 
 export const useBackgroundGeolocation = () => {
   const [geolocations, setGeolocations] = useState([]);

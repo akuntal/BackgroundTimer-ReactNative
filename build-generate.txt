@@ -11,6 +11,6 @@ Step 3.
 ./gradlew assembleDebug
 
 Step 4.
-./gradlew assembleDebug
+./gradlew assembleRelease
 
 #Generated `apk` will be located at `android/app/build/outputs/apk`
