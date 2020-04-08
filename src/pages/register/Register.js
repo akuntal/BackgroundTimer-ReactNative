@@ -156,9 +156,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   txt: {
-    width: 350,
     fontSize: 12,
     paddingTop: 10,
+    width: Dimensions.get('window').width - 60,
   },
   registerTxt: {
     color: 'white',

@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import BackgroundTimer from 'react-native-background-timer';
 import {getLocationFromCache, saveLocationInCache} from '../utils';
+import {Alert} from 'react-native';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
@@ -40,12 +41,12 @@ const getGeolocation = () => {
       },
       (error) => {
         console.log(error);
-        storeGeolocations({error: 'error'});
+        Alert.alert('Error', JSON.stringify(error));
       },
       {enableHighAccuracy: false, timeout: 20000, maximumAge: 0},
     );
   } else {
-    storeGeolocations({error: 'geolocation not supported!!!'});
+    Alert.alert('Error', 'geolocation not supported!!!');
   }
 };
 
