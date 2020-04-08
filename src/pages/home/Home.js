@@ -6,6 +6,8 @@ import {
   StatusBar,
   SafeAreaView,
   ScrollView,
+  Button,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {
@@ -14,17 +16,12 @@ import {
   convertTimestampToDate,
 } from '../../utils';
 import {Location} from '../../components/Location';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useGeolocation} from '../../hooks/useGeolocation';
 import {uploadGeolocation} from './uploadGeolocation';
-import {useGetStatus} from '../../hooks/useGetStatus';
+import {useGetStatus, startFetchingStatus} from '../../hooks/useGetStatus';
 
 export default function Home() {
   const navigation = useNavigation();
-
-  const geolocations = useGeolocation();
-
-  const status = useGetStatus();
 
   useEffect(() => {
     (async () => {
@@ -35,8 +32,28 @@ export default function Home() {
     })();
   });
 
+  const geolocations = useGeolocation();
+
+  const status = useGetStatus();
+
   const handlerUploadPress = () => {
     uploadGeolocation(geolocations);
+    startFetchingStatus();
+  };
+
+  const sendAlert = () => {
+    Alert.alert(
+      'Attention!',
+      'We will share your location data and will fetch your intersections with infected people. Do you wish to proceed?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => handlerUploadPress()},
+      ],
+    );
   };
 
   const circleStyles = (color) => {
@@ -50,9 +67,10 @@ export default function Home() {
         {status && (
           <View style={styles.containerTop}>
             <Text style={styles.headText}>Risk factor</Text>
-            <View style={circleStyles(STATUS_COLORS[status.status])}>
-              <Text style={{color: STATUS_COLORS[status.status]}}>
-                {status.status?.toUpperCase()}
+            <View
+              style={circleStyles(STATUS_COLORS[status.status.toLowerCase()])}>
+              <Text style={{color: STATUS_COLORS[status.status.toLowerCase()]}}>
+                {status.status.toUpperCase()}
               </Text>
             </View>
             <Text style={styles.intersectionText}>
@@ -77,10 +95,8 @@ export default function Home() {
             </ScrollView>
           </View>
         )}
-        <View>
-          <TouchableOpacity style={styles.upload} onPress={handlerUploadPress}>
-            <Text style={styles.buttonTxt}>Upload</Text>
-          </TouchableOpacity>
+        <View style={styles.upload}>
+          <Button title="UPLOAD" onPress={sendAlert} />
         </View>
       </SafeAreaView>
     </>
@@ -139,17 +155,8 @@ const styles = StyleSheet.create({
     maxHeight: 250,
   },
   upload: {
-    width: 200,
+    width: 150,
     marginTop: 20,
-    height: 50,
-    backgroundColor: '#006BB6',
-    borderRadius: 50,
     alignSelf: 'center',
-  },
-  buttonTxt: {
-    color: 'white',
-    fontSize: 25,
-    paddingTop: 7,
-    textAlign: 'center',
   },
 });

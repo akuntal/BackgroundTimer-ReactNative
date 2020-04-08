@@ -8,7 +8,7 @@ export const getIncrementalArray = (min, max) => {
   return arr;
 };
 
-const USER_DETAILS = 'USER_DETAILS_333';
+const USER_DETAILS = 'USER_DETAILS';
 
 const GEO_LOCATION_KEY = 'GEO_LOCATION_KEY';
 
@@ -58,13 +58,14 @@ export const saveWaitingForStatus = (status) =>
  * save result to cache
  * @param {string} status - result json
  */
-export const saveStatus = (status) =>
+export const saveStatusInCache = (status) =>
   AsyncStorage.setItem(RESULT_STATUS, status);
 
 /**
  * returns saved result from cache
  */
-export const getSavedStatus = () => AsyncStorage.getItem(RESULT_STATUS);
+export const getSavedStatusFromCache = () =>
+  AsyncStorage.getItem(RESULT_STATUS);
 
 export const STATUS_COLORS = {
   high: '#f00',
