@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
   },
   time: {
     fontWeight: 'bold',
-    width: 80,
   },
   location: {},
 });

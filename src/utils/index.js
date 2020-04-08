@@ -73,6 +73,6 @@ export const STATUS_COLORS = {
 };
 
 export const convertTimestampToDate = (timestamp) => {
-  const d = new Date(timestamp);
+  const d = new Date(Number(timestamp));
   return d.toDateString();
 };

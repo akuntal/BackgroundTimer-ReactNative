@@ -22,7 +22,7 @@ export const useGetStatus = () => {
         });
 
       timer = setTimeout(update, delay);
-    }, delay);
+    });
   }, []);
 
   return status;

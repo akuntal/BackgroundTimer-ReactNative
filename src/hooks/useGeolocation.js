@@ -4,7 +4,7 @@ import {getLocationFromCache, saveLocationInCache} from '../utils';
 
 navigator.geolocation = require('@react-native-community/geolocation');
 
-const delay = 1000;
+const delay = 5000;
 
 export const useGeolocation = () => {
   const [geolocations, setGeolocations] = useState([]);

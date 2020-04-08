@@ -66,8 +66,9 @@ export default function Home() {
               contentInsetAdjustmentBehavior="automatic"
               style={styles.scrollView}>
               <View style={styles.body}>
-                {status.intersections?.map(({timestamp, lat, long}) => (
+                {status.intersections?.map(({timestamp, lat, long}, index) => (
                   <Location
+                    key={`key-${timestamp + index}`}
                     time={convertTimestampToDate(timestamp)}
                     location={`Lat-${lat}, Long-${long}`}
                   />
