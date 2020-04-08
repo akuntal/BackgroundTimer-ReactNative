@@ -1,5 +1,10 @@
 import {Alert} from 'react-native';
-import {clearLocationCache, getUserDetails} from '../../utils';
+import {
+  clearLocationCache,
+  getUserDetails,
+  saveWaitingForStatus,
+  WAITING_STATUS,
+} from '../../utils';
 import {CONFIG} from '../../config/config';
 
 export const uploadGeolocation = async (geolocations) => {
@@ -15,9 +20,10 @@ export const uploadGeolocation = async (geolocations) => {
     body: JSON.stringify(data),
   })
     .then((response) => response.json())
-    .then((json) => {
+    .then(async (json) => {
       Alert.alert('Data uploaded successfully!!');
-      clearLocationCache();
+      await clearLocationCache();
+      await saveWaitingForStatus(WAITING_STATUS.YES);
     })
     .catch((error) => {
       console.error(error);

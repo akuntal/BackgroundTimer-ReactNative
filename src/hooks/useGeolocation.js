@@ -42,6 +42,7 @@ const getGeolocation = () => {
         console.log(error);
         storeGeolocations({error: 'error'});
       },
+      {enableHighAccuracy: false, timeout: 20000, maximumAge: 0},
     );
   } else {
     storeGeolocations({error: 'geolocation not supported!!!'});

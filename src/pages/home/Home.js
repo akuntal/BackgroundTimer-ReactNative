@@ -8,7 +8,11 @@ import {
   ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {getUserDetails, STATUS_COLORS} from '../../utils';
+import {
+  getUserDetails,
+  STATUS_COLORS,
+  convertTimestampToDate,
+} from '../../utils';
 import {Location} from '../../components/Location';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useGeolocation} from '../../hooks/useGeolocation';
@@ -48,7 +52,7 @@ export default function Home() {
             <Text style={styles.headText}>Risk factor</Text>
             <View style={circleStyles(STATUS_COLORS[status.status])}>
               <Text style={{color: STATUS_COLORS[status.status]}}>
-                {status.status}
+                {status.status?.toUpperCase()}
               </Text>
             </View>
             <Text style={styles.intersectionText}>
@@ -62,9 +66,9 @@ export default function Home() {
               contentInsetAdjustmentBehavior="automatic"
               style={styles.scrollView}>
               <View style={styles.body}>
-                {status.intersections.map(({timestamp, lat, long}) => (
+                {status.intersections?.map(({timestamp, lat, long}) => (
                   <Location
-                    time={new Date(timestamp)}
+                    time={convertTimestampToDate(timestamp)}
                     location={`Lat-${lat}, Long-${long}`}
                   />
                 ))}

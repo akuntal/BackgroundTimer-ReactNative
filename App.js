@@ -19,7 +19,7 @@ import {YellowBox} from 'react-native';
 const App: () => React$Node = () => {
   useEffect(() => {
     SplashScreen.hide();
-    YellowBox.ignoreWarnings(['Setting a timer', 'Picker']);
+    YellowBox.ignoreWarnings(['Setting a timer', 'Picker', 'AsyncStorage']);
   }, []);
 
   const Stack = createStackNavigator();
