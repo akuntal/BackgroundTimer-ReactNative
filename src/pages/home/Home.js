@@ -120,7 +120,7 @@ export default function Home() {
               </Text>
             </View>
             <View style={styles.intersectionTextContainer}>
-              <Text style={styles.intersectionText}>Total Intersection</Text>
+              <Text style={styles.intersectionText}>Total Intersection </Text>
               <Text style={styles.intersectionTextBold}>
                 {status.numberIntersections}
               </Text>
