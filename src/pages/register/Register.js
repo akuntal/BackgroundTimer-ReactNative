@@ -171,7 +171,7 @@ export class Register extends React.Component {
 
 const styles = StyleSheet.create({
   done: {
-    width: Dimensions.get('window').width - 60,
+    width: Dimensions.get('window').width - 260,
     marginTop: 40,
     borderRadius: 50,
   },

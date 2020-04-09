@@ -44,8 +44,10 @@ export const startFetchingStatus = async () => {
       })
         .then((response) => response.json())
         .then((json) => {
-          saveStatusInCache(JSON.stringify(json.data[0]));
-          saveWaitingForStatus(WAITING_STATUS.NO);
+          if (json.data.length) {
+            saveStatusInCache(JSON.stringify(json.data[0]));
+            saveWaitingForStatus(WAITING_STATUS.NO);
+          }
         })
         .catch((error) => {
           console.error(error);
