@@ -12,7 +12,9 @@ import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {YellowBox} from 'react-native';
 import {AppDrawer} from './src/pages/appDrawer/AppDrawer';
-import {Header} from './src/components/Header';
+import {Provider} from 'react-redux';
+import {store, persistor} from './src/redux/store';
+import {PersistGate} from 'redux-persist/integration/react';
 
 const App: () => React$Node = () => {
   useEffect(() => {
@@ -22,9 +24,13 @@ const App: () => React$Node = () => {
 
   return (
     <>
-      <NavigationContainer>
-        <AppDrawer />
-      </NavigationContainer>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <NavigationContainer>
+            <AppDrawer />
+          </NavigationContainer>
+        </PersistGate>
+      </Provider>
     </>
   );
 };

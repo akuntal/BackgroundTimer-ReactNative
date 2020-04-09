@@ -10,28 +10,22 @@ import {
   Dimensions,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import {
-  getIncrementalArray,
-  saveUserDetails,
-  getUserDetails,
-} from '../../utils';
+import {getIncrementalArray, getUserDetails} from '../../utils';
 import {Header} from '../../components/Header';
 import {Button} from '../../components/Button';
+import {connect} from 'react-redux';
+import {registerUser} from '../../redux/actions';
 
 const YEARS = getIncrementalArray(1950, 2020);
 
-export class Register extends React.Component {
-  state = {
-    user: {yob: 1990, gender: 'M', phone: ''},
-    btnDisabled: false,
-    terms: true,
-    headerLabel: 'Registration',
-    hideHamburger: true,
-  };
-
-  componentDidMount() {
-    this.handlerScreenFocus();
-    this.props.navigation.addListener('willFocus', this.handlerScreenFocus);
+class Register extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {...props.user},
+      btnDisabled: false,
+      terms: true,
+    };
   }
 
   handlerScreenFocus = async () => {
@@ -59,7 +53,10 @@ export class Register extends React.Component {
     const isFormValid = this.validateForm();
     if (isFormValid) {
       this.setState({btnDisabled: true});
-      await saveUserDetails(this.state.user);
+      this.props.registerUser({
+        user: {...this.state.user},
+        isUserRegistered: true,
+      });
       this.props.navigation.navigate('Home');
     } else {
       Alert.alert('Invalid', 'Invalid mobile number');
@@ -67,18 +64,24 @@ export class Register extends React.Component {
   };
 
   render() {
+    const {isUserRegistered} = this.props;
+    const headerLabel = isUserRegistered ? 'Profile' : 'Registration';
+    const hideHamburger = !isUserRegistered;
+
+    const btnDisabled =
+      isUserRegistered ||
+      !this.state.terms ||
+      this.state.user.phone.length !== 10;
+
     return (
       <>
-        <Header
-          title={this.state.headerLabel}
-          hideHamburger={this.state.hideHamburger}
-        />
+        <Header title={headerLabel} hideHamburger={hideHamburger} />
         <View style={styles.container}>
           <>
             <Text style={styles.txt}>Year of Birth*</Text>
             <View style={styles.pickerContainer}>
               <Picker
-                enabled={this.state.hideHamburger}
+                enabled={!isUserRegistered}
                 style={styles.picker}
                 selectedValue={this.state.user.yob}
                 onValueChange={(itemValue, itemIndex) =>
@@ -99,7 +102,7 @@ export class Register extends React.Component {
             <Text style={styles.txt}>Gender*</Text>
             <View style={styles.pickerContainer}>
               <Picker
-                enabled={this.state.hideHamburger}
+                enabled={!isUserRegistered}
                 style={styles.picker}
                 selectedValue={this.state.gender}
                 onValueChange={(itemValue, itemIndex) =>
@@ -118,42 +121,38 @@ export class Register extends React.Component {
                 source={require('../../../assets/flag.png')}
                 style={styles.flag}
               />
+              <Text style={styles.countryCodeText}>+91</Text>
               <TextInput
-                editable={this.state.hideHamburger}
+                editable={!isUserRegistered}
                 maxLength={10}
                 style={styles.input}
                 value={this.state.user.phone}
                 keyboardType="number-pad"
                 autoCompleteType="tel"
-                onChangeText={(val) =>
-                  this.setState({user: {...this.state.user, phone: val}})
-                }
+                onChangeText={(val) => {
+                  this.setState({user: {...this.state.user, phone: val}});
+                }}
               />
             </View>
           </>
 
           <View style={styles.containerCheckbox}>
             <CheckBox
-              disabled={!this.state.hideHamburger}
+              disabled={isUserRegistered}
               style={styles.checkbox}
               value={this.state.terms}
               onValueChange={() => this.setState({terms: !this.state.terms})}
             />
             <Text style={styles.txt}>
-              Please confirm that you are fine with sharing your location with
-              us.
+              I agree to share my data to assess risk of exposure.
             </Text>
           </View>
 
           <View style={styles.done}>
             <Button
               handlerPress={this.signUp}
-              label="DONE"
-              disabled={
-                this.state.btnDisabled ||
-                !this.state.terms ||
-                this.state.user.phone.length !== 10
-              }
+              label="Register"
+              disabled={!!btnDisabled}
             />
           </View>
 
@@ -169,9 +168,19 @@ export class Register extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  user: state.appState.user,
+  isUserRegistered: state.appState.isUserRegistered,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  registerUser: (user) => dispatch(registerUser(user)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
+
 const styles = StyleSheet.create({
   done: {
-    width: Dimensions.get('window').width - 60,
+    width: Dimensions.get('window').width - 260,
     marginTop: 40,
     borderRadius: 50,
   },
@@ -206,7 +215,7 @@ const styles = StyleSheet.create({
   },
   txt: {
     fontSize: 12,
-    paddingTop: 10,
+    paddingTop: 5,
     color: '#4B5860',
     fontFamily: 'Helvetica Neue, Medium',
     width: Dimensions.get('window').width - 60,
@@ -242,7 +251,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   input: {
-    width: Dimensions.get('window').width - 130,
+    width: Dimensions.get('window').width - 165,
     height: 50,
     backgroundColor: '#ffffff',
     margin: 10,
@@ -268,5 +277,9 @@ const styles = StyleSheet.create({
     width: 98,
     height: 15,
     marginTop: 80,
+  },
+  countryCodeText: {
+    marginTop: 24,
+    marginLeft: 10,
   },
 });

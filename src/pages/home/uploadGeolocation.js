@@ -1,16 +1,6 @@
-import {Alert} from 'react-native';
-import {
-  clearLocationCache,
-  getUserDetails,
-  saveWaitingForStatus,
-  WAITING_STATUS,
-} from '../../utils';
 import {CONFIG} from '../../config/config';
 
-export const uploadGeolocation = async (geolocations) => {
-  const user = JSON.parse(await getUserDetails());
-  const data = {userData: geolocations, ...user};
-
+export const uploadGeolocation = async (data) => {
   return fetch(`${CONFIG.API_HOST}/api/contacts`, {
     method: 'POST',
     headers: {
@@ -20,10 +10,6 @@ export const uploadGeolocation = async (geolocations) => {
     body: JSON.stringify(data),
   })
     .then((response) => response.json())
-    .then(async (json) => {
-      await clearLocationCache();
-      await saveWaitingForStatus(WAITING_STATUS.YES);
-    })
     .catch((error) => {
       console.error(error);
     });
