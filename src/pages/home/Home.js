@@ -98,28 +98,29 @@ export default function Home() {
     });
   };
 
-  const enableUpload = () => {
+  const minimumTimeRemaining = () => {
     const currentTime = new Date().getTime();
-    const diff = currentTime - lastUploadTime;
-    return diff > UPLOAD_DELAY;
+    const time = Math.ceil(
+      (UPLOAD_DELAY - (currentTime - lastUploadTime)) / (1000 * 3600),
+    );
+    return time;
   };
 
   const sendAlert = async () => {
-    setShowAlert(true);
-    // const currentTime = new Date().getTime();
-
-    // const diff = currentTime - lastUploadTime;
-    // if (diff > UPLOAD_DELAY) {
-    //   setShowAlert(true);
-    // } else {
-    //   resetNotification();
-    //   setNotification('Please wait for atleast 24hrs to upload again');
-    // }
+    const remainingHr = minimumTimeRemaining();
+    if (remainingHr < 0) {
+      setShowAlert(true);
+    } else {
+      resetNotification();
+      setNotification(
+        `Please wait for ${remainingHr}hours before you assess your risk again!`,
+      );
+    }
   };
 
   const resetNotification = (time = 5000) => {
     setTimeout(() => {
-      setNotification('Your location is being tracked.');
+      setNotification(normalNotification);
     }, time);
   };
 
@@ -192,11 +193,7 @@ export default function Home() {
         )}
       </SafeAreaView>
       <View style={styles.upload}>
-        <Button
-          handlerPress={sendAlert}
-          label="Assess My Risk"
-          disabled={!enableUpload()}
-        />
+        <Button handlerPress={sendAlert} label="Assess My Risk" />
       </View>
       <View style={styles.notificationArea}>
         <Text style={styles.notification}>{notification}</Text>

@@ -121,6 +121,7 @@ class Register extends React.Component {
                 source={require('../../../assets/flag.png')}
                 style={styles.flag}
               />
+              <Text style={styles.countryCodeText}>+91</Text>
               <TextInput
                 editable={!isUserRegistered}
                 maxLength={10}
@@ -128,9 +129,9 @@ class Register extends React.Component {
                 value={this.state.user.phone}
                 keyboardType="number-pad"
                 autoCompleteType="tel"
-                onChangeText={(val) =>
-                  this.setState({user: {...this.state.user, phone: val}})
-                }
+                onChangeText={(val) => {
+                  this.setState({user: {...this.state.user, phone: val}});
+                }}
               />
             </View>
           </>
@@ -143,8 +144,7 @@ class Register extends React.Component {
               onValueChange={() => this.setState({terms: !this.state.terms})}
             />
             <Text style={styles.txt}>
-              Please confirm that you are fine with sharing your location with
-              us.
+              I agree to share my data to assess risk of exposure.
             </Text>
           </View>
 
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   txt: {
     fontSize: 12,
-    paddingTop: 10,
+    paddingTop: 5,
     color: '#4B5860',
     fontFamily: 'Helvetica Neue, Medium',
     width: Dimensions.get('window').width - 60,
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   input: {
-    width: Dimensions.get('window').width - 130,
+    width: Dimensions.get('window').width - 165,
     height: 50,
     backgroundColor: '#ffffff',
     margin: 10,
@@ -277,5 +277,9 @@ const styles = StyleSheet.create({
     width: 98,
     height: 15,
     marginTop: 80,
+  },
+  countryCodeText: {
+    marginTop: 24,
+    marginLeft: 10,
   },
 });

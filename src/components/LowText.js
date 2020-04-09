@@ -4,16 +4,17 @@ import {Link} from './Link';
 
 export const LowText = () => (
   <>
+    <Text style={styles.intersectionText}>Your risk of infection is low.</Text>
     <Text style={styles.intersectionText}>
-      Your risk of infection is low. We recommend that you stay home to avoid
-      chances of exposure. Follow these &nbsp;
+      We recommend that you stay home to avoid chances of exposure. Follow these
+      &nbsp;
       <Link
         text="Dos and Donts"
         url="https://www.mohfw.gov.in/pdf/Poster_Corona_ad_Eng.pdf"
       />
     </Text>
-    <Text style={styles.intersectionText}>
-      Retake the self-assessment test after 24 hours.
+    <Text style={[styles.intersectionText, [{marginTop: 10}]]}>
+      Retake the self-assessment again.
     </Text>
   </>
 );
