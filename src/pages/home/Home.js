@@ -14,6 +14,8 @@ import {
   convertTimestampToDate,
   getIsStatusWaiting,
   WAITING_STATUS,
+  saveLastUploadTime,
+  getLastUploadTime,
 } from '../../utils';
 import {Location} from '../../components/Location';
 import {useGeolocation} from '../../hooks/useGeolocation';
@@ -23,6 +25,8 @@ import {Header} from '../../components/Header';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {AlertComponent} from '../../components/Alert';
 import {Button} from '../../components/Button';
+
+const upload_delay = 60 * 60 * 24 * 1000; // one day
 
 export default function Home() {
   const [notification, setNotification] = useState(
@@ -57,20 +61,37 @@ export default function Home() {
 
   const handlerUploadPress = () => {
     setShowAlert(false);
+
     setNotification('Your location data is uploading...');
 
     uploadGeolocation(geolocations).then(() => {
       setNotification('Data is uploaded. Pls wait for the update');
-      setTimeout(() => {
-        setNotification('Your location is being tracked.');
-      }, 5000);
-    });
+      startFetchingStatus();
 
-    startFetchingStatus();
+      const uploadedTime = new Date();
+      saveLastUploadTime(uploadedTime.getTime().toString());
+      resetNotification();
+    });
   };
 
-  const sendAlert = () => {
-    setShowAlert(true);
+  const sendAlert = async () => {
+    const lastUploadTime = await getLastUploadTime();
+
+    const currentTime = new Date().getTime();
+
+    const diff = currentTime - lastUploadTime;
+    if (diff > upload_delay) {
+      setShowAlert(true);
+    } else {
+      setNotification('Please wait for atleast 24hrs to upload again');
+      resetNotification();
+    }
+  };
+
+  const resetNotification = (time = 5000) => {
+    setTimeout(() => {
+      setNotification('Your location is being tracked.');
+    }, time);
   };
 
   const circleStyles = (color) => {
@@ -84,7 +105,7 @@ export default function Home() {
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <Header title="HCL" showLogo={true} />
+      <Header showLogo={true} />
       <SafeAreaView style={styles.mainContainer}>
         {status && (
           <View style={styles.containerTop}>

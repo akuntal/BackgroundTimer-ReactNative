@@ -16,6 +16,8 @@ const WAITING_FOR_STATUS = 'WAITING_FOR_STATUS';
 
 const RESULT_STATUS = 'RESULT_STATUS';
 
+const LAST_UPLOAD_TIME = 'LAST_UPLOAD_TIME';
+
 export const WAITING_STATUS = {
   YES: 'yes',
   NO: 'no',
@@ -66,6 +68,18 @@ export const saveStatusInCache = (status) =>
  */
 export const getSavedStatusFromCache = () =>
   AsyncStorage.getItem(RESULT_STATUS);
+
+/**
+ * save last upload time to cache
+ * @param {string} status - result json
+ */
+export const saveLastUploadTime = (time) =>
+  AsyncStorage.setItem(LAST_UPLOAD_TIME, time);
+
+/**
+ * returns last upload time from from cache
+ */
+export const getLastUploadTime = () => AsyncStorage.getItem(LAST_UPLOAD_TIME);
 
 export const STATUS_COLORS = {
   high: '#D94444',
