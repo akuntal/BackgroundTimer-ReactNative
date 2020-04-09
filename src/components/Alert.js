@@ -8,6 +8,7 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
+import {Button} from './Button';
 
 export class AlertComponent extends Component {
   constructor(props) {
@@ -36,12 +37,15 @@ export class AlertComponent extends Component {
                 width: '100%',
                 alignItems: 'center',
               }}>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.buttonStyle_Yes}
                 onPress={this.props.onOk}
                 activeOpacity={0.7}>
                 <Text style={styles.TextStyle}> YES </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
+              <View style={styles.buttonContainer}>
+                <Button label="YES" handlerPress={this.props.onOk} />
+              </View>
               <View
                 style={{width: 1, height: '30%', backgroundColor: '#fff'}}
               />
@@ -65,11 +69,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
     height: 350,
-    width: '90%',
+    width: '80%',
     borderWidth: 1,
     borderColor: '#FFFFFF',
     elevation: 5,
-    borderRadius: 30,
+    borderRadius: 20,
     paddingTop: 20,
     paddingBottom: 60,
     paddingLeft: 40,
@@ -92,28 +96,21 @@ const styles = StyleSheet.create({
     margin: 20,
     height: '27%',
   },
-
-  buttonStyle_Yes: {
-    width: '70%',
-    height: '70%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#006BB6',
-    borderRadius: 50,
+  buttonContainer: {
+    width: '60%',
   },
 
   TextStyle: {
     color: '#ffffff',
     textAlign: 'center',
-    fontSize: 22,
     fontWeight: 'bold',
     fontFamily: 'Helvetica Neue',
     marginTop: -5,
   },
 
   buttonStyle_No: {
-    width: '70%',
-    height: '70%',
+    width: '60%',
+    height: 35,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#99A2A8',

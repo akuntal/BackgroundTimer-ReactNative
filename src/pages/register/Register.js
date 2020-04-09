@@ -78,6 +78,7 @@ export class Register extends React.Component {
             <Text style={styles.txt}>Year of Birth*</Text>
             <View style={styles.pickerContainer}>
               <Picker
+                enabled={this.state.hideHamburger}
                 style={styles.picker}
                 selectedValue={this.state.user.yob}
                 onValueChange={(itemValue, itemIndex) =>
@@ -98,6 +99,7 @@ export class Register extends React.Component {
             <Text style={styles.txt}>Gender*</Text>
             <View style={styles.pickerContainer}>
               <Picker
+                enabled={this.state.hideHamburger}
                 style={styles.picker}
                 selectedValue={this.state.gender}
                 onValueChange={(itemValue, itemIndex) =>
@@ -117,6 +119,7 @@ export class Register extends React.Component {
                 style={styles.flag}
               />
               <TextInput
+                editable={this.state.hideHamburger}
                 maxLength={10}
                 style={styles.input}
                 value={this.state.user.phone}
@@ -131,6 +134,7 @@ export class Register extends React.Component {
 
           <View style={styles.containerCheckbox}>
             <CheckBox
+              disabled={!this.state.hideHamburger}
               style={styles.checkbox}
               value={this.state.terms}
               onValueChange={() => this.setState({terms: !this.state.terms})}
@@ -142,15 +146,6 @@ export class Register extends React.Component {
           </View>
 
           <View style={styles.done}>
-            {/* <Button
-              title="Done"
-              onPress={this.signUp}
-              disabled={
-                this.state.btnDisabled ||
-                !this.state.terms ||
-                this.state.user.phone.length !== 10
-              }
-            /> */}
             <Button
               handlerPress={this.signUp}
               label="DONE"
