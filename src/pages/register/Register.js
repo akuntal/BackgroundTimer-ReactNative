@@ -8,10 +8,15 @@ import {
   Alert,
   StyleSheet,
   Dimensions,
-  Button,
 } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import {getIncrementalArray, saveUserDetails} from '../../utils';
+import {
+  getIncrementalArray,
+  saveUserDetails,
+  getUserDetails,
+} from '../../utils';
+import {Header} from '../../components/Header';
+import {Button} from '../../components/Button';
 
 const YEARS = getIncrementalArray(1950, 2020);
 
@@ -20,6 +25,24 @@ export class Register extends React.Component {
     user: {yob: 1990, gender: 'M', phone: ''},
     btnDisabled: false,
     terms: true,
+    headerLabel: 'Registration',
+    hideHamburger: true,
+  };
+
+  componentDidMount() {
+    this.handlerScreenFocus();
+    this.props.navigation.addListener('willFocus', this.handlerScreenFocus);
+  }
+
+  handlerScreenFocus = async () => {
+    const user = await getUserDetails();
+    if (user) {
+      this.setState({
+        user: JSON.parse(user),
+        headerLabel: 'Profile',
+        hideHamburger: false,
+      });
+    }
   };
 
   validateForm() {
@@ -45,80 +68,108 @@ export class Register extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <>
-          <Text style={styles.txt}>Year of Birth*</Text>
-          <View style={styles.picker}>
-            <Picker
-              selectedValue={this.state.user.yob}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({user: {...this.state.user, yob: itemValue}})
-              }>
-              {YEARS.map((year) => (
-                <Picker.Item
-                  key={`key-${year}`}
-                  label={year.toString()}
-                  value={year}
-                />
-              ))}
-            </Picker>
+      <>
+        <Header
+          title={this.state.headerLabel}
+          hideHamburger={this.state.hideHamburger}
+        />
+        <View style={styles.container}>
+          <>
+            <Text style={styles.txt}>Year of Birth*</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                style={styles.picker}
+                selectedValue={this.state.user.yob}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({user: {...this.state.user, yob: itemValue}})
+                }>
+                {YEARS.map((year) => (
+                  <Picker.Item
+                    key={`key-${year}`}
+                    label={year.toString()}
+                    value={year}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </>
+
+          <>
+            <Text style={styles.txt}>Gender*</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                style={styles.picker}
+                selectedValue={this.state.gender}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({user: {...this.state.user, gender: itemValue}})
+                }>
+                <Picker.Item label="Male" value="M" />
+                <Picker.Item label="Female" value="F" />
+              </Picker>
+            </View>
+          </>
+
+          <>
+            <Text style={styles.txt}>Mobile Number*</Text>
+            <View style={styles.mobileContainer}>
+              <Image
+                source={require('../../../assets/flag.png')}
+                style={styles.flag}
+              />
+              <TextInput
+                maxLength={10}
+                style={styles.input}
+                value={this.state.user.phone}
+                keyboardType="number-pad"
+                autoCompleteType="tel"
+                onChangeText={(val) =>
+                  this.setState({user: {...this.state.user, phone: val}})
+                }
+              />
+            </View>
+          </>
+
+          <View style={styles.containerCheckbox}>
+            <CheckBox
+              style={styles.checkbox}
+              value={this.state.terms}
+              onValueChange={() => this.setState({terms: !this.state.terms})}
+            />
+            <Text style={styles.txt}>
+              Please confirm that you are fine with sharing your location with
+              us.
+            </Text>
           </View>
-        </>
 
-        <>
-          <Text style={styles.txt}>Gender*</Text>
-          <View style={styles.picker}>
-            <Picker
-              selectedValue={this.state.gender}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({user: {...this.state.user, gender: itemValue}})
-              }>
-              <Picker.Item label="Male" value="M" />
-              <Picker.Item label="Female" value="F" />
-            </Picker>
+          <View style={styles.done}>
+            {/* <Button
+              title="Done"
+              onPress={this.signUp}
+              disabled={
+                this.state.btnDisabled ||
+                !this.state.terms ||
+                this.state.user.phone.length !== 10
+              }
+            /> */}
+            <Button
+              handlerPress={this.signUp}
+              label="DONE"
+              disabled={
+                this.state.btnDisabled ||
+                !this.state.terms ||
+                this.state.user.phone.length !== 10
+              }
+            />
           </View>
-        </>
 
-        <>
-          <Text style={styles.txt}>Mobile*</Text>
-          <TextInput
-            style={styles.input}
-            value={this.state.phone}
-            keyboardType="number-pad"
-            autoCompleteType="tel"
-            onChangeText={(val) =>
-              this.setState({user: {...this.state.user, phone: val}})
-            }
-          />
-        </>
-
-        <View style={styles.containerCheckbox}>
-          <CheckBox
-            style={styles.checkbox}
-            value={this.state.terms}
-            disabled
-            onValueChange={() => this.setState({terms: true})}
-          />
-          <Text>
-            Please confirm that you are fine with sharing your location with us.
-          </Text>
+          <View>
+            <Image
+              source={require('../../../assets/Image4.png')}
+              style={styles.logo}
+            />
+          </View>
         </View>
-
-        <View style={styles.done}>
-          <Button
-            title="Done"
-            onPress={this.signUp}
-            disabled={this.state.btnDisabled}
-          />
-        </View>
-
-        <View>
-          <Image
-            source={require('../../../assets/Image4.png')}
-            style={styles.logo}
-          />
-        </View>
-      </View>
+      </>
     );
   }
 }
@@ -129,13 +180,13 @@ const styles = StyleSheet.create({
     marginTop: 40,
     borderRadius: 50,
   },
-  picker: {
+  pickerContainer: {
     width: Dimensions.get('window').width - 60,
     height: 50,
     backgroundColor: '#ffffff',
     margin: 10,
     padding: 0,
-    color: 'black',
+
     borderRadius: 2,
     fontSize: 15,
     fontWeight: '500',
@@ -144,6 +195,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1.5,
     borderRightWidth: 1.5,
     borderColor: '#B2BABF',
+  },
+  picker: {
+    color: '#4B5860',
   },
   containerCheckbox: {
     width: Dimensions.get('window').width - 60,
@@ -158,6 +212,8 @@ const styles = StyleSheet.create({
   txt: {
     fontSize: 12,
     paddingTop: 10,
+    color: '#4B5860',
+    fontFamily: 'Helvetica Neue, Medium',
     width: Dimensions.get('window').width - 60,
   },
   registerTxt: {
@@ -181,12 +237,21 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     textAlign: 'center',
   },
-  input: {
+  mobileContainer: {
     width: Dimensions.get('window').width - 60,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  flag: {
+    marginTop: 14,
+    width: 60,
+  },
+  input: {
+    width: Dimensions.get('window').width - 130,
     height: 50,
     backgroundColor: '#ffffff',
     margin: 10,
-    color: 'black',
+    color: '#4B5860',
     borderRadius: 2,
     fontSize: 15,
     fontWeight: '500',
@@ -195,6 +260,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1.5,
     borderRightWidth: 1.5,
     borderColor: '#B2BABF',
+    paddingLeft: 10,
   },
   container: {
     alignSelf: 'stretch',

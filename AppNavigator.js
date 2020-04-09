@@ -1,10 +1,5 @@
-import { createStackNavigator } from 'react-navigation-stack';
-import {Register} from './Register';
-import Friends from './Friends';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
-const AppNavigator = createStackNavigator({
-  Register: { screen: Register },
-  Friends: { screen: Friends},
-});
+const AppNavigator = createDrawerNavigator();
 
 export default AppNavigator;

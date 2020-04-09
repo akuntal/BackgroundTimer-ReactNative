@@ -11,7 +11,7 @@ export const uploadGeolocation = async (geolocations) => {
   const user = JSON.parse(await getUserDetails());
   const data = {userData: geolocations, ...user};
 
-  fetch(`${CONFIG.API_HOST}/api/contacts`, {
+  return fetch(`${CONFIG.API_HOST}/api/contacts`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -21,7 +21,6 @@ export const uploadGeolocation = async (geolocations) => {
   })
     .then((response) => response.json())
     .then(async (json) => {
-      Alert.alert('Data uploaded successfully!!');
       await clearLocationCache();
       await saveWaitingForStatus(WAITING_STATUS.YES);
     })

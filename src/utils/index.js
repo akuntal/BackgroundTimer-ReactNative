@@ -68,12 +68,12 @@ export const getSavedStatusFromCache = () =>
   AsyncStorage.getItem(RESULT_STATUS);
 
 export const STATUS_COLORS = {
-  high: '#f00',
+  high: '#D94444',
   mid: '#ffaa1d',
   safe: '#008000',
 };
 
 export const convertTimestampToDate = (timestamp) => {
-  const d = new Date(Number(timestamp));
-  return d.toDateString();
+  const d = new Date(timestamp);
+  return d.toLocaleDateString();
 };

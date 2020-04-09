@@ -19,6 +19,8 @@ export const useGetStatus = () => {
       const statusFromCache = await getSavedStatusFromCache();
       if (statusFromCache) {
         setStatus(JSON.parse(statusFromCache));
+      } else {
+        setStatus(statusFromCache);
       }
     })();
   });
