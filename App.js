@@ -19,7 +19,12 @@ import {PersistGate} from 'redux-persist/integration/react';
 const App: () => React$Node = () => {
   useEffect(() => {
     SplashScreen.hide();
-    YellowBox.ignoreWarnings(['Setting a timer', 'Picker', 'AsyncStorage']);
+    YellowBox.ignoreWarnings([
+      'Setting a timer',
+      'Picker',
+      'AsyncStorage',
+      'FlatList',
+    ]);
   }, []);
 
   return (

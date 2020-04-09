@@ -15,6 +15,7 @@ import {Header} from '../../components/Header';
 import {Button} from '../../components/Button';
 import {connect} from 'react-redux';
 import {registerUser} from '../../redux/actions';
+import ImageCarousel from '../../components/ImageCarousel';
 
 const YEARS = getIncrementalArray(1950, 2020);
 
@@ -25,6 +26,7 @@ class Register extends React.Component {
       user: {...props.user},
       btnDisabled: false,
       terms: true,
+      showCarousel: true,
     };
   }
 
@@ -73,6 +75,11 @@ class Register extends React.Component {
       !this.state.terms ||
       this.state.user.phone.length !== 10;
 
+    if (this.state.showCarousel && !isUserRegistered) {
+      return (
+        <ImageCarousel onAgree={() => this.setState({showCarousel: false})} />
+      );
+    }
     return (
       <>
         <Header title={headerLabel} hideHamburger={hideHamburger} />
