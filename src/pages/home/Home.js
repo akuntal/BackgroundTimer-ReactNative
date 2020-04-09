@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,84 +8,113 @@ import {
   ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {
-  getUserDetails,
-  STATUS_COLORS,
-  convertTimestampToDate,
-  getIsStatusWaiting,
-  WAITING_STATUS,
-  saveLastUploadTime,
-  getLastUploadTime,
-} from '../../utils';
+import {STATUS_COLORS, UPLOAD_DELAY, FETCH_STATUS_DELAY} from '../../utils';
 import {Location} from '../../components/Location';
 import {useGeolocation} from '../../hooks/useGeolocation';
 import {uploadGeolocation} from './uploadGeolocation';
-import {useGetStatus, startFetchingStatus} from '../../hooks/useGetStatus';
+import {fetchStatus} from '../../hooks/useGetStatus';
 import {Header} from '../../components/Header';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {AlertComponent} from '../../components/Alert';
 import {Button} from '../../components/Button';
+import {useSelector, useDispatch} from 'react-redux';
+import {
+  updateWaitingStatus,
+  updateStatus,
+  updateLastUploadTime,
+} from '../../redux/actions';
+import {LowText} from '../../components/LowText';
+import {MidText} from '../../components/MidText';
+import {HighText} from '../../components/HighText';
 
-const upload_delay = 60 * 60 * 24 * 1000; // one day
+const afterUploadNotification =
+  'Your location data is uploaded. Please wait for assessment results. ';
+const normalNotification = 'Your location is being tracked.';
+
+const uploadingNotification = 'Your location data is uploading...';
 
 export default function Home() {
-  const [notification, setNotification] = useState(
-    'Your location is being tracked.',
+  const isUserRegistered = useSelector(
+    (state) => state.appState.isUserRegistered,
   );
 
-  const [showAlert, setShowAlert] = useState(false);
+  const user = useSelector((state) => state.appState.user);
+
+  const status = useSelector((state) => state.appState.status);
+
+  const lastUploadTime = useSelector((state) => state.appState.lastUploadTime);
+
+  const isStatusWaiting = useSelector(
+    (state) => state.appState.isStatusWaiting,
+  );
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => {
-      const user = await getUserDetails();
-      if (!user) {
-        navigation.navigate('Profile');
-      }
-    })();
-  });
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    (async () => {
-      const waitingStatus = await getIsStatusWaiting();
-      if (waitingStatus === WAITING_STATUS.YES) {
-        startFetchingStatus();
-      }
-    })();
-  }, []);
+  if (!isUserRegistered) {
+    navigation.navigate('Profile');
+  }
 
   const geolocations = useGeolocation();
 
-  const status = useGetStatus();
+  const [notification, setNotification] = useState(normalNotification);
+
+  const [showAlert, setShowAlert] = useState(false);
+
+  const fetchStatusNow = () => {
+    fetchStatus(user.phone).then((res) => {
+      if (res.data.length) {
+        dispatch(updateWaitingStatus(false));
+        dispatch(updateStatus(res.data[0]));
+        resetNotification();
+      } else {
+        setTimeout(fetchStatusNow, FETCH_STATUS_DELAY);
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (isStatusWaiting) {
+      setNotification(afterUploadNotification);
+      fetchStatusNow();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlerUploadPress = () => {
     setShowAlert(false);
 
-    setNotification('Your location data is uploading...');
+    setNotification(uploadingNotification);
 
-    uploadGeolocation(geolocations).then(() => {
-      setNotification('Data is uploaded. Pls wait for the update');
-      startFetchingStatus();
+    uploadGeolocation({...user, userData: geolocations}).then((res) => {
+      setNotification(afterUploadNotification);
 
-      const uploadedTime = new Date();
-      saveLastUploadTime(uploadedTime.getTime().toString());
-      resetNotification();
+      dispatch(updateWaitingStatus(true));
+
+      dispatch(updateLastUploadTime(new Date().getTime()));
+
+      fetchStatusNow();
     });
   };
 
-  const sendAlert = async () => {
-    const lastUploadTime = await getLastUploadTime();
-
+  const enableUpload = () => {
     const currentTime = new Date().getTime();
-
     const diff = currentTime - lastUploadTime;
-    if (diff > upload_delay) {
-      setShowAlert(true);
-    } else {
-      setNotification('Please wait for atleast 24hrs to upload again');
-      resetNotification();
-    }
+    return diff > UPLOAD_DELAY;
+  };
+
+  const sendAlert = async () => {
+    setShowAlert(true);
+    // const currentTime = new Date().getTime();
+
+    // const diff = currentTime - lastUploadTime;
+    // if (diff > UPLOAD_DELAY) {
+    //   setShowAlert(true);
+    // } else {
+    //   resetNotification();
+    //   setNotification('Please wait for atleast 24hrs to upload again');
+    // }
   };
 
   const resetNotification = (time = 5000) => {
@@ -107,7 +136,18 @@ export default function Home() {
       <StatusBar barStyle="dark-content" />
       <Header showLogo={true} />
       <SafeAreaView style={styles.mainContainer}>
-        {status && (
+        {!status.status && (
+          <View style={styles.message}>
+            <Text style={styles.messageText}>
+              Your location data is being gathered.
+            </Text>
+            <Text style={styles.messageText}>
+              We recommend you not to close the app or disable GPS location
+              sharing, for unambiguous results.
+            </Text>
+          </View>
+        )}
+        {status.status && (
           <View style={styles.containerTop}>
             <Text style={styles.headText}>Risk Factor</Text>
             <View
@@ -120,34 +160,43 @@ export default function Home() {
               </Text>
             </View>
             <View style={styles.intersectionTextContainer}>
-              <Text style={styles.intersectionText}>Total Intersection </Text>
-              <Text style={styles.intersectionTextBold}>
-                {status.numberIntersections}
-              </Text>
+              {status.status.toLowerCase() === 'high' && <HighText />}
+              {status.status.toLowerCase() === 'mid' && <MidText />}
+              {status.status.toLowerCase() === 'low' && <LowText />}
             </View>
           </View>
         )}
-        {status && (
-          <View style={styles.locationsContainer}>
-            <ScrollView
-              contentInsetAdjustmentBehavior="automatic"
-              style={styles.scrollView}>
-              <View style={styles.body}>
-                {status.intersections?.map(({timestamp, lat, long}, index) => (
-                  <Location
-                    key={`key-${timestamp + index}`}
-                    time={convertTimestampToDate(timestamp)}
-                    location={`Lat-${lat}, Long-${long}`}
-                  />
-                ))}
-              </View>
-            </ScrollView>
-          </View>
+        {status.intersections && !!status.intersections.length && (
+          <>
+            <View style={styles.exposureHeaderTextContainer}>
+              <Text style={[styles.messageText, [{textAlign: 'left'}]]}>
+                Your potential exposure(s)
+              </Text>
+            </View>
+            <View style={styles.locationsContainer}>
+              <ScrollView
+                contentInsetAdjustmentBehavior="automatic"
+                style={styles.scrollView}>
+                <View style={styles.body}>
+                  {status.intersections.map(({timestamp, lat, long}, index) => (
+                    <Location
+                      key={`key-${timestamp + index}`}
+                      time={timestamp}
+                      location={`Lat-${lat}, Long-${long}`}
+                    />
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          </>
         )}
       </SafeAreaView>
       <View style={styles.upload}>
-        {/* <Button title="UPLOAD" onPress={sendAlert} /> */}
-        <Button handlerPress={sendAlert} label="UPLOAD" />
+        <Button
+          handlerPress={sendAlert}
+          label="Assess My Risk"
+          disabled={!enableUpload()}
+        />
       </View>
       <View style={styles.notificationArea}>
         <Text style={styles.notification}>{notification}</Text>
@@ -168,10 +217,25 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     paddingTop: 10,
   },
+  message: {
+    padding: 20,
+    paddingTop: 200,
+    alignSelf: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  messageText: {
+    paddingBottom: 10,
+    textAlign: 'center',
+    fontSize: 17,
+    fontFamily: 'Helvetica Neue',
+    color: '#343C41',
+  },
   headText: {
     alignSelf: 'center',
     fontWeight: 'bold',
     fontSize: 17,
+    textAlign: 'center',
     fontFamily: 'Helvetica Neue',
     color: '#343C41',
   },
@@ -201,27 +265,17 @@ const styles = StyleSheet.create({
   },
   intersectionTextContainer: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
   },
-  intersectionText: {
-    color: '#4B5860',
-    fontSize: 12,
-    fontFamily: 'Helvetica Neue',
-  },
-  intersectionTextBold: {
-    color: '#4B5860',
-    fontSize: 12,
-    fontWeight: 'bold',
-    fontFamily: 'Helvetica Neue',
+  exposureHeaderTextContainer: {
+    marginTop: 10,
   },
   locationsContainer: {
-    marginTop: 20,
     elevation: 5,
     borderRadius: 5,
     backgroundColor: '#ffffff',
   },
-
   container: {
     opacity: 1,
     justifyContent: 'center',
@@ -231,7 +285,7 @@ const styles = StyleSheet.create({
   },
 
   scrollView: {
-    maxHeight: 250,
+    maxHeight: 150,
   },
   upload: {
     position: 'absolute',

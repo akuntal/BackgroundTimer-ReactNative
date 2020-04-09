@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     paddingRight: 8,
     display: 'flex',
-    flexDirection: 'row',
-    height: 48,
+    flexDirection: 'column',
+    height: 60,
   },
   time: {
     fontFamily: 'Helvetica Neue',
