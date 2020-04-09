@@ -10,7 +10,6 @@ navigator.geolocation = require('@react-native-community/geolocation');
 export const useGeolocation = () => {
   const geolocations = useSelector((state) => state.appState.geolocations);
 
-  console.log(geolocations);
   const dispatch = useDispatch();
 
   const getGeolocation = () => {
