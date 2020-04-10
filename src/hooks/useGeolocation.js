@@ -9,7 +9,9 @@ navigator.geolocation = require('@react-native-community/geolocation');
 
 export const useGeolocation = () => {
   const geolocations = useSelector((state) => state.appState.geolocations);
-
+  const isUserRegistered = useSelector(
+    (state) => state.appState.isUserRegistered,
+  );
   const dispatch = useDispatch();
 
   const getGeolocation = () => {
@@ -22,7 +24,11 @@ export const useGeolocation = () => {
           console.log(error);
           Alert.alert('Error', JSON.stringify(error));
         },
-        {enableHighAccuracy: false, timeout: 20000, maximumAge: 0},
+        {
+          enableHighAccuracy: false,
+          timeout: GEOLOCATION_DELAY,
+          maximumAge: GEOLOCATION_DELAY,
+        },
       );
     } else {
       Alert.alert('Error', 'geolocation not supported!!!');
@@ -30,11 +36,14 @@ export const useGeolocation = () => {
   };
 
   useEffect(() => {
-    BackgroundTimer.runBackgroundTimer(() => {
+    if (isUserRegistered) {
       getGeolocation();
-    }, GEOLOCATION_DELAY);
+      BackgroundTimer.runBackgroundTimer(() => {
+        getGeolocation();
+      }, GEOLOCATION_DELAY);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isUserRegistered]);
 
   return geolocations;
 };
