@@ -17,7 +17,7 @@ export const convertTimestampToDate = (time) => {
   return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
 };
 
-export const GEOLOCATION_DELAY = 10000; // 300000; - 5 min
+export const GEOLOCATION_DELAY = 20000; // 300000; - 5 min
 
 export const UPLOAD_DELAY = 60 * 60 * 24 * 1000; //one day
 
