@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentText2: {
-    fontSize: 14,
+    fontSize: 16,
     textAlign: 'left',
   },
 });

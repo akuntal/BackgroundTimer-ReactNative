@@ -13,16 +13,16 @@ export const LowText = () => (
         url="https://www.mohfw.gov.in/pdf/Poster_Corona_ad_Eng.pdf"
       />
     </Text>
-    <Text style={[styles.intersectionText, [{marginTop: 10}]]}>
+    {/* <Text style={[styles.intersectionText, [{marginTop: 10}]]}>
       Retake the self-assessment again.
-    </Text>
+    </Text> */}
   </>
 );
 
 const styles = StyleSheet.create({
   intersectionText: {
     color: '#4B5860',
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Helvetica Neue',
   },
 });

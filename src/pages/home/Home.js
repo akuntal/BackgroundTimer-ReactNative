@@ -6,6 +6,7 @@ import {
   StatusBar,
   SafeAreaView,
   ScrollView,
+  Image,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {STATUS_COLORS, UPLOAD_DELAY, FETCH_STATUS_DELAY} from '../../utils';
@@ -26,6 +27,7 @@ import {
 import {LowText} from '../../components/LowText';
 import {MidText} from '../../components/MidText';
 import {HighText} from '../../components/HighText';
+import Images from '../../components/Images'; 
 
 const afterUploadNotification =
   'Your location data is uploaded. Please wait for assessment results. ';
@@ -139,10 +141,16 @@ export default function Home() {
       <SafeAreaView style={styles.mainContainer}>
         {!status.status && (
           <View style={styles.message}>
-            <Text style={styles.messageText}>
+            <View style={styles.imageContainer}>
+              <Image source={Images.image3} style={{height: 160, width: 160}} />
+            </View>
+            <Text style={styles.messageText_HomeScreen}>
               Your location data is being gathered.
             </Text>
-            <Text style={styles.messageText}>
+            <Text style={styles.messageText_HomeScreen}>
+              You can assess your risk once in every 24hrs by clicking the button below.
+            </Text>
+            <Text style={styles.messageText_HomeScreen}>
               We recommend you not to close the app or disable GPS location
               sharing, for unambiguous results.
             </Text>
@@ -212,19 +220,30 @@ const styles = StyleSheet.create({
   mainContainer: {
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 10,
+    paddingTop: 20,
   },
   message: {
-    padding: 20,
-    paddingTop: 200,
+    //padding: 20,
+    paddingTop: 20,
     alignSelf: 'center',
     display: 'flex',
     justifyContent: 'center',
+    borderRadius:20,
+    borderWidth:2,
+    borderColor:'#fefefe',
+    backgroundColor:"#ffffff"
   },
   messageText: {
     paddingBottom: 10,
     textAlign: 'center',
     fontSize: 17,
+    fontFamily: 'Helvetica Neue',
+    color: '#343C41',
+  },
+  messageText_HomeScreen: {
+    paddingBottom: 30,
+    textAlign: 'center',
+    fontSize: 20,
     fontFamily: 'Helvetica Neue',
     color: '#343C41',
   },
@@ -304,5 +323,15 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingRight: 12,
     fontFamily: 'Helvetica Neue',
+  },
+  imageContainer: {
+    backgroundColor: '#e8f0f3',
+    padding: 10,
+    margin: 20,
+    borderRadius: 100,
+    borderColor: '#e0e0e0',
+    borderWidth: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
