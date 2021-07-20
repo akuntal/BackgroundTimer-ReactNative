@@ -18,7 +18,7 @@
     "@react-navigation/native": "^5.1.4",
     "@react-navigation/stack": "^5.2.9",
     "react": "16.11.0",
-    "react-native": "0.62.0",
+    "react-native": "0.62.3",
     "react-native-anchor-carousel": "^3.1.2",
     "react-native-background-timer": "^2.2.0",
     "react-native-gesture-handler": "^1.6.1",
